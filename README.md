@@ -24,6 +24,6 @@ npm run test:ci
 ## E2E Tests
 
 ```sh
-npx playwright install chromium
+npx playwright install --no-shell chromium
 npm run e2e
 ```
