@@ -1,0 +1,131 @@
+<div [class]="selectedId() !== null ? 'grid gap-6 xl:grid-cols-3' : 'grid gap-6'">
+  <section class="min-w-0 xl:col-span-2" aria-label="Card inventory">
+    <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <h1 class="text-3xl font-semibold">Inventory</h1>
+      @if (state()?.status === 'loaded') {
+        <span class="badge badge-ghost">{{ cards().length }} cards in catalogue</span>
+      }
+    </header>
+    <div class="tabs tabs-border" aria-label="Collection filters">
+      <button class="tab tab-active" aria-current="true">All cards</button>
+      <button class="tab" disabled title="Available when collection tracking is added">
+        Duplicates
+      </button>
+      <button class="tab" disabled title="Available when collection tracking is added">
+        Missing
+      </button>
+      <button class="tab" disabled title="Available when collection tracking is added">
+        Owned
+      </button>
+    </div>
+    <p class="mt-2 text-xs text-base-content/60">
+      Collection tracking is coming later. Browse the full catalogue below.
+    </p>
+    <div class="my-6 flex gap-3">
+      <label class="input input-sm min-w-0 flex-1"
+        ><svg lucideSearch [size]="18" aria-hidden="true"></svg
+        ><input
+          aria-label="Search cards"
+          #searchInput
+          placeholder="Search cards…"
+          [value]="search()"
+          (input)="search.set(searchInput.value)"
+      /></label>
+      <select
+        class="select select-sm w-36"
+        aria-label="Filter by rarity"
+        #raritySelect
+        [value]="rarity()"
+        (change)="rarity.set(raritySelect.value)"
+      >
+        <option value="">All rarities</option>
+        @for (value of rarities; track value) {
+          <option [value]="value">{{ value }}</option>
+        }
+      </select>
+    </div>
+    @let result = state();
+    @if (!result || result.status === 'loading') {
+      <div
+        class="flex min-h-60 flex-col items-center justify-center gap-4 p-6 text-center"
+        role="status"
+      >
+        <span class="loading loading-spinner loading-sm"></span>Loading cards…
+      </div>
+    } @else if (result.status === 'error') {
+      <div
+        class="flex min-h-60 flex-col items-center justify-center gap-4 p-6 text-center"
+        role="alert"
+      >
+        <h2 class="text-lg font-semibold">Couldn’t load the catalogue</h2>
+        <p class="text-sm text-base-content/60">Check that the API is running and try again.</p>
+        <button class="btn btn-outline btn-sm" (click)="loadCards()">Try again</button>
+      </div>
+    } @else if (!cards().length) {
+      <div class="flex min-h-60 flex-col items-center justify-center gap-4 p-6 text-center">
+        <h2 class="text-lg font-semibold">No cards yet</h2>
+        <p class="text-sm text-base-content/60">
+          Cards will appear here when they’re added to the catalogue.
+        </p>
+      </div>
+    } @else if (!filteredCards().length) {
+      <div class="flex min-h-60 flex-col items-center justify-center gap-4 p-6 text-center">
+        <h2 class="text-lg font-semibold">No matching cards</h2>
+        <p class="text-sm text-base-content/60">Try another name or rarity.</p>
+        <button class="btn btn-outline btn-sm" (click)="clearFilters()">Clear filters</button>
+      </div>
+    } @else {
+      <p class="mb-3 text-sm text-base-content/60" aria-live="polite">
+        {{ filteredCards().length }} {{ filteredCards().length === 1 ? 'card' : 'cards' }}
+      </p>
+      <div
+        [class]="
+          selectedId() !== null
+            ? 'grid grid-cols-2 gap-4'
+            : 'grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'
+        "
+      >
+        @for (card of filteredCards(); track card.id) {
+          <button
+            class="card card-border min-w-0 bg-base-100 p-2 text-left hover:border-primary focus-visible:outline-2 focus-visible:outline-primary"
+            [class.border-primary]="selectedId() === card.id"
+            [attr.aria-label]="'Quick details for ' + card.name"
+            [attr.aria-expanded]="selectedId() === card.id"
+            aria-controls="quick-details"
+            (click)="openDetails(card.id, $event)"
+          >
+            <app-card-art [card]="card" />
+            <div class="card-body gap-2 p-3">
+              <div class="flex justify-between gap-2 text-xs text-base-content/60">
+                <span>{{ card.rarity }}</span
+                ><span>#{{ card.id.toString().padStart(3, '0') }}</span>
+              </div>
+              <h2 class="card-title text-base">{{ card.name }}</h2>
+              <p class="text-sm text-base-content/60">{{ card.element }}</p>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </section>
+  @if (selectedId(); as id) {
+    <aside
+      id="quick-details"
+      class="card card-border fixed inset-y-4 right-4 z-30 w-80 max-w-full overflow-y-auto bg-base-100 shadow-lg xl:sticky xl:inset-auto xl:top-4 xl:z-auto xl:w-auto xl:self-start xl:shadow-none"
+      aria-labelledby="quick-details-heading"
+    >
+      <header class="flex items-center justify-between border-b border-base-300 p-4">
+        <h2 id="quick-details-heading" class="font-medium">Quick details</h2>
+        <button
+          id="close-details"
+          class="btn btn-ghost btn-sm btn-square"
+          aria-label="Close quick details"
+          (click)="closeDetails()"
+        >
+          <svg lucideX [size]="18" aria-hidden="true"></svg>
+        </button>
+      </header>
+      <app-card-details [id]="id" />
+    </aside>
+  }
+</div>
