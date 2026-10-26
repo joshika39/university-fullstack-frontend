@@ -21,3 +21,7 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm run test:ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: E2E test
+        run: npm run e2e
