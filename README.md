@@ -9,7 +9,7 @@ npm ci
 npm start
 ```
 
-Open http://localhost:4200. 
+Open http://localhost:4200.
 
 Run the backend with `dotnet run --launch-profile http` from `../university-fullstack-backend/CardTrader/CardTrader.WebApi`.
 
@@ -19,4 +19,11 @@ Run the backend with `dotnet run --launch-profile http` from `../university-full
 npm run typecheck
 npm run build
 npm run test:ci
+```
+
+## E2E Tests
+
+```sh
+npx playwright install --no-shell chromium
+npm run e2e
 ```
