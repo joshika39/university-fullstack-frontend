@@ -11,7 +11,6 @@ test('opens quick details and the full card page from inventory', async ({ page 
     imageUrl: '',
   };
 
-  // Mock both endpoints so this example needs no backend or database.
   await page.route('**/api/cards', (route) =>
     route.fulfill({
       json: [card],
