@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { accountError, AuthApi } from './core/auth-api';
 
 import {
   LucideLayoutGrid,
@@ -7,8 +8,12 @@ import {
   LucideArrowLeftRight,
   LucideGamepad2,
   LucideMenu,
+  LucideUser,
+  LucideLogIn,
+  LucideUserPlus,
+  LucideLogOut,
 } from '@lucide/angular';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 type Theme = 'system' | 'light' | 'dark';
 
@@ -16,27 +21,58 @@ type Theme = 'system' | 'light' | 'dark';
   imports: [
     RouterOutlet,
     RouterLink,
+    RouterLinkActive,
     LucideLayoutGrid,
     LucidePackageOpen,
     LucideArrowLeftRight,
     LucideGamepad2,
     LucideMenu,
+    LucideUser,
+    LucideLogIn,
+    LucideUserPlus,
+    LucideLogOut,
   ],
   selector: 'app-root',
   templateUrl: './app.html',
 })
 export class App implements OnInit {
   private readonly document = inject(DOCUMENT);
-  protected readonly theme = signal<Theme>(this.readTheme());
-  protected readonly menuOpen = signal(false);
+  protected readonly auth = inject(AuthApi);
+  private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  protected loggingOut = false;
+  protected accountMessage = '';
+  protected theme: Theme = this.readTheme();
+  protected menuOpen = false;
 
   ngOnInit() {
     this.changeTheme(this.readTheme());
   }
 
+  protected async logout() {
+    if (this.loggingOut) return;
+    this.loggingOut = true;
+    this.accountMessage = '';
+    try {
+      await this.auth.logout();
+      this.menuOpen = false;
+      await this.router.navigate(['/login']);
+    } catch (error) {
+      if (!this.auth.session) {
+        this.menuOpen = false;
+        await this.router.navigate(['/login']);
+      } else {
+        this.accountMessage = accountError(error, 'Could not log out. Please try again.');
+      }
+    } finally {
+      this.loggingOut = false;
+      this.changeDetector.markForCheck();
+    }
+  }
+
   protected changeTheme(value: string) {
     const theme: Theme = value === 'light' || value === 'dark' ? value : 'system';
-    this.theme.set(theme);
+    this.theme = theme;
     if (theme === 'system') {
       this.document.documentElement.removeAttribute('data-theme');
     } else {

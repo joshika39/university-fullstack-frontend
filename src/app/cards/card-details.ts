@@ -36,8 +36,11 @@ import { CardArt } from './card-art';
       </div>
     } @else {
       @let card = result.data;
-      <div [class]="fullPage ? 'grid gap-8 p-6 md:grid-cols-2' : 'space-y-6 p-6'">
-        <div class="mx-auto w-full max-w-xs">
+      <div
+        [class]="fullPage ? 'grid gap-8 p-6 md:grid-cols-2' : 'space-y-6 p-6'"
+        [attr.data-rarity]="card.rarity"
+      >
+        <div class="rarity-card mx-auto w-full max-w-xs rounded-box">
           <app-card-art [card]="card" />
         </div>
         <div class="space-y-6">
@@ -45,7 +48,7 @@ import { CardArt } from './card-art';
             <p class="mb-2 text-xs text-base-content/60">
               CARD {{ card.id.toString().padStart(3, '0') }}
             </p>
-            <h2 class="text-2xl font-semibold">{{ card.name }}</h2>
+            <h2 class="rarity-name text-2xl font-semibold">{{ card.name }}</h2>
           </div>
           <div class="flex flex-wrap gap-2">
             <span class="badge badge-outline">{{ card.rarity }}</span
@@ -71,9 +74,8 @@ import { CardArt } from './card-art';
             </dl>
           } @else {
             <a class="btn btn-primary w-full" [routerLink]="['/cards', card.id]"
-            >View full card
-              <svg lucideArrowUpRight [size]="16" aria-hidden="true"></svg
-              >
+              >View full card
+              <svg lucideArrowUpRight [size]="16" aria-hidden="true"></svg>
             </a>
           }
         </div>
