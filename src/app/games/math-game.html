@@ -1,0 +1,70 @@
+<section class="mx-auto max-w-sm py-6 md:py-12" aria-labelledby="game-heading">
+  <h1 id="game-heading" class="text-3xl font-semibold">Quick maths</h1>
+  <p class="mt-2 text-sm text-base-content/60">Ten simple equations. Take your time.</p>
+  <dl class="mt-6 flex justify-between gap-4 text-sm tabular-nums">
+    <div>
+      <dt class="text-base-content/60">Time</dt>
+      <dd>{{ elapsedSeconds.toFixed(1) }}s</dd>
+    </div>
+    <div class="text-right">
+      <dt class="text-base-content/60">Average per answer</dt>
+      <dd>{{ averageSeconds === null ? '—' : averageSeconds.toFixed(1) + 's' }}</dd>
+    </div>
+  </dl>
+  <p class="mt-2 text-xs text-base-content/60">Timer pauses while you review an answer.</p>
+
+  <div class="card card-border mt-6 bg-base-100">
+    @if (!started) {
+      <div class="card-body gap-6 text-center">
+        <p class="text-sm text-base-content/70">Ready when you are.</p>
+        <button class="btn btn-neutral w-full" type="button" (click)="startRound()">Start</button>
+      </div>
+    } @else if (finished) {
+      <div class="card-body gap-6 text-center">
+        <h2 class="text-lg font-medium">Round complete</h2>
+        <p class="text-4xl font-semibold tabular-nums">{{ score }} / {{ totalQuestions }}</p>
+        <p class="text-sm text-base-content/60">
+          {{ score === totalQuestions ? 'A perfect round!' : 'Ready for another round?' }}
+        </p>
+        <button class="btn btn-neutral w-full" type="button" (click)="startRound()">
+          Play again
+        </button>
+      </div>
+    } @else {
+      <form class="card-body gap-6" ngNativeValidate (ngSubmit)="submit(); answerInput.focus()">
+        <div class="flex justify-between gap-4 text-sm text-base-content/60">
+          <span>Question {{ question }} / {{ totalQuestions }}</span>
+          <span>Score: {{ score }}</span>
+        </div>
+        <p class="py-4 text-center text-4xl font-semibold tabular-nums" aria-label="Equation">
+          {{ left }} {{ operator }} {{ right }} = ?
+        </p>
+        <label class="flex flex-col gap-2">
+          <span class="text-sm font-medium">Your answer</span>
+          <input
+            #answerInput
+            class="input w-full"
+            type="number"
+            name="answer"
+            inputmode="numeric"
+            step="1"
+            required
+            autocomplete="off"
+            [readOnly]="checked"
+            [(ngModel)]="answer"
+          />
+        </label>
+        <p class="min-h-5 text-sm" role="status">{{ feedback }}</p>
+        <button class="btn btn-neutral w-full" type="submit">
+          {{
+            checked
+              ? question === totalQuestions
+                ? 'See results'
+                : 'Next question'
+              : 'Check answer'
+          }}
+        </button>
+      </form>
+    }
+  </div>
+</section>

@@ -7,16 +7,16 @@
     #navigationToggle
     type="checkbox"
     class="drawer-toggle"
-    [checked]="menuOpen()"
-    (change)="menuOpen.set(navigationToggle.checked)"
+    [checked]="menuOpen"
+    (change)="menuOpen = navigationToggle.checked"
   />
   <div class="drawer-content min-w-0">
     <button
       class="btn btn-ghost btn-square m-4 lg:hidden"
       aria-label="Toggle navigation"
       aria-controls="main-navigation"
-      [attr.aria-expanded]="menuOpen()"
-      (click)="menuOpen.set(!menuOpen())"
+      [attr.aria-expanded]="menuOpen"
+      (click)="menuOpen = !menuOpen"
     >
       <svg lucideMenu [size]="20" aria-hidden="true"></svg>
     </button>
@@ -27,13 +27,17 @@
   <div id="main-navigation" class="drawer-side z-40">
     <label for="navigation-drawer" class="drawer-overlay" aria-label="Close navigation"></label>
     <aside class="flex min-h-full w-64 flex-col bg-base-100 p-4">
-      <a class="btn btn-ghost mb-6 text-lg" routerLink="/inventory" (click)="menuOpen.set(false)"
+      <a class="btn btn-ghost mb-6 text-lg" routerLink="/inventory" (click)="menuOpen = false"
         >Card Trader</a
       >
       <nav aria-label="Main navigation">
         <ul class="menu w-full gap-2">
           <li>
-            <a class="menu-active" routerLink="/inventory" (click)="menuOpen.set(false)"
+            <a
+              routerLinkActive="menu-active"
+              ariaCurrentWhenActive="page"
+              routerLink="/inventory"
+              (click)="menuOpen = false"
               ><svg lucideLayoutGrid [size]="18" aria-hidden="true"></svg>Inventory</a
             >
           </li>
@@ -54,22 +58,69 @@
             </button>
           </li>
           <li>
-            <button disabled>
-              <svg lucideGamepad2 [size]="18" aria-hidden="true"></svg>Games<span
-                class="badge badge-ghost badge-sm"
-                >Soon</span
-              >
-            </button>
+            <a
+              routerLink="/games"
+              routerLinkActive="menu-active"
+              ariaCurrentWhenActive="page"
+              (click)="menuOpen = false"
+            >
+              <svg lucideGamepad2 [size]="18" aria-hidden="true"></svg>Games
+            </a>
           </li>
         </ul>
       </nav>
-      <label class="mt-auto flex items-center justify-between gap-3 pt-6">
+      <nav class="mt-auto pt-6" aria-label="Account navigation">
+        <ul class="menu w-full gap-2">
+          @if (auth.session) {
+            <li>
+              <a
+                routerLink="/profile"
+                routerLinkActive="menu-active"
+                ariaCurrentWhenActive="page"
+                (click)="menuOpen = false"
+              >
+                <svg lucideUser [size]="18" aria-hidden="true"></svg>Profile
+              </a>
+            </li>
+            <li>
+              <button type="button" [disabled]="loggingOut" (click)="logout()">
+                <svg lucideLogOut [size]="18" aria-hidden="true"></svg
+                >{{ loggingOut ? 'Logging out…' : 'Log out' }}
+              </button>
+            </li>
+          } @else {
+            <li>
+              <a
+                routerLink="/login"
+                routerLinkActive="menu-active"
+                ariaCurrentWhenActive="page"
+                (click)="menuOpen = false"
+              >
+                <svg lucideLogIn [size]="18" aria-hidden="true"></svg>Log in
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/register"
+                routerLinkActive="menu-active"
+                ariaCurrentWhenActive="page"
+                (click)="menuOpen = false"
+                ><svg lucideUserPlus [size]="18" aria-hidden="true"></svg>Register</a
+              >
+            </li>
+          }
+        </ul>
+        @if (accountMessage) {
+          <p class="px-3 text-sm" role="alert">{{ accountMessage }}</p>
+        }
+      </nav>
+      <label class="flex items-center justify-between gap-3 pt-6">
         <span class="text-sm">Theme</span>
         <select
           class="select select-sm w-32"
           aria-label="Theme"
           #themeSelect
-          [value]="theme()"
+          [value]="theme"
           (change)="changeTheme(themeSelect.value)"
         >
           <option value="system">System</option>

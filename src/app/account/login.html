@@ -1,0 +1,42 @@
+<section class="mx-auto max-w-sm py-6 md:py-12" aria-labelledby="login-heading">
+  <h1 id="login-heading" class="text-3xl font-semibold">Log in</h1>
+  <p class="mt-2 text-sm text-base-content/60">Welcome back to Card Trader.</p>
+  @if (registered) {
+    <p class="mt-4 text-sm" role="status">Account created. You can now log in.</p>
+  }
+  <div class="card card-border mt-6 bg-base-100">
+    <form class="card-body gap-5" ngNativeValidate (ngSubmit)="login()">
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-medium">Email</span>
+        <input
+          class="input w-full"
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+          [(ngModel)]="email"
+        />
+      </label>
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-medium">Password</span>
+        <input
+          class="input w-full"
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          required
+          [(ngModel)]="password"
+        />
+      </label>
+      <button class="btn btn-neutral w-full" type="submit" [disabled]="busy">
+        {{ busy ? 'Logging in…' : 'Log in' }}
+      </button>
+      @if (message) {
+        <p class="text-sm text-base-content/70" role="alert">{{ message }}</p>
+      }
+    </form>
+  </div>
+  <p class="mt-5 text-center text-sm text-base-content/70">
+    New here? <a class="link" routerLink="/register">Create an account</a>
+  </p>
+</section>

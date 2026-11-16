@@ -1,5 +1,5 @@
 <div [class]="selectedId() !== null ? 'grid gap-6 xl:grid-cols-3' : 'grid gap-6'">
-  <section class="min-w-0 xl:col-span-2" aria-label="Card inventory">
+  <section class="@container min-w-0 xl:col-span-2" aria-label="Card inventory">
     <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
       <h1 class="text-3xl font-semibold">Inventory</h1>
       @if (state()?.status === 'loaded') {
@@ -78,16 +78,11 @@
       <p class="mb-3 text-sm text-base-content/60" aria-live="polite">
         {{ filteredCards().length }} {{ filteredCards().length === 1 ? 'card' : 'cards' }}
       </p>
-      <div
-        [class]="
-          selectedId() !== null
-            ? 'grid grid-cols-2 gap-4'
-            : 'grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'
-        "
-      >
+      <div class="grid grid-cols-2 gap-5 @xl:grid-cols-3 @3xl:grid-cols-4 @4xl:grid-cols-5">
         @for (card of filteredCards(); track card.id) {
           <button
-            class="card card-border min-w-0 bg-base-100 p-2 text-left hover:border-primary focus-visible:outline-2 focus-visible:outline-primary"
+            class="card card-border rarity-card min-w-0 w-full max-w-56 bg-base-100 p-2 text-left hover:border-primary focus-visible:outline-2 focus-visible:outline-primary"
+            [attr.data-rarity]="card.rarity"
             [class.border-primary]="selectedId() === card.id"
             [attr.aria-label]="'Quick details for ' + card.name"
             [attr.aria-expanded]="selectedId() === card.id"
@@ -100,7 +95,7 @@
                 <span>{{ card.rarity }}</span
                 ><span>#{{ card.id.toString().padStart(3, '0') }}</span>
               </div>
-              <h2 class="card-title text-base">{{ card.name }}</h2>
+              <h2 class="card-title rarity-name text-base">{{ card.name }}</h2>
               <p class="text-sm text-base-content/60">{{ card.element }}</p>
             </div>
           </button>
@@ -111,10 +106,12 @@
   @if (selectedId(); as id) {
     <aside
       id="quick-details"
-      class="card card-border fixed inset-y-4 right-4 z-30 w-80 max-w-full overflow-y-auto bg-base-100 shadow-lg xl:sticky xl:inset-auto xl:top-4 xl:z-auto xl:w-auto xl:self-start xl:shadow-none"
+      class="card card-border fixed inset-y-4 right-4 z-30 max-h-[calc(100dvh-2rem)] w-80 max-w-full overflow-y-auto overscroll-contain bg-base-100 shadow-lg xl:sticky xl:inset-auto xl:top-4 xl:z-auto xl:w-auto xl:self-start xl:shadow-none"
       aria-labelledby="quick-details-heading"
     >
-      <header class="flex items-center justify-between border-b border-base-300 p-4">
+      <header
+        class="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-base-300 bg-base-100 p-4"
+      >
         <h2 id="quick-details-heading" class="font-medium">Quick details</h2>
         <button
           id="close-details"

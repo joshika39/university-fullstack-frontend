@@ -5,3 +5,34 @@
     dark --prefersdark;
   logs: false;
 }
+
+[data-rarity='Common'] {
+  --rarity-color: light-dark(#475569, #94a3b8);
+}
+
+[data-rarity='Uncommon'] {
+  --rarity-color: light-dark(#166534, #86efac);
+}
+
+[data-rarity='Rare'] {
+  --rarity-color: light-dark(#1d4ed8, #93c5fd);
+}
+
+[data-rarity='Epic'] {
+  --rarity-color: light-dark(#7e22ce, #d8b4fe);
+}
+
+[data-rarity='Legendary'] {
+  --rarity-color: light-dark(#92400e, #fcd34d);
+}
+
+.rarity-card {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--rarity-color, transparent) 45%, transparent),
+    0 0 12px color-mix(in srgb, var(--rarity-color, transparent) 28%, transparent),
+    0 0 24px color-mix(in srgb, var(--rarity-color, transparent) 18%, transparent);
+}
+
+.rarity-name {
+  color: var(--rarity-color, inherit);
+}

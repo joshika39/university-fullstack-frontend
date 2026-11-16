@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('opens quick details and the full card page from inventory', async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 360 });
   const card = {
     id: 1,
     name: 'Korra',
@@ -31,7 +32,11 @@ test('opens quick details and the full card page from inventory', async ({ page 
   const quickDetails = page.getByRole('complementary', { name: 'Quick details' });
   await expect(quickDetails.getByRole('heading', { name: 'Korra', exact: true })).toBeVisible();
   await expect(quickDetails.getByText(card.description, { exact: true })).toBeVisible();
-  await quickDetails.getByRole('link', { name: 'View full card' }).click();
+  const fullCard = quickDetails.getByRole('link', { name: 'View full card' });
+  await fullCard.scrollIntoViewIfNeeded();
+  await expect(fullCard).toBeInViewport();
+  await expect(quickDetails.getByRole('button', { name: 'Close quick details' })).toBeInViewport();
+  await fullCard.click();
 
   await expect(page).toHaveURL('/cards/1');
   await expect(page.getByRole('heading', { name: 'Korra', exact: true })).toBeVisible();
